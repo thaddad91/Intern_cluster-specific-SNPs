@@ -3,7 +3,7 @@
 library("RMySQL") # mysql connection
 library("ggplot2") # plotting
 
-installdir <- "/data/haddadt/NL_SNP"
+installdir <- "masked_dir"
 setwd(dir = installdir)
 snp_dir <- paste(installdir, "/curated_SNPs/", sep = "")
 
@@ -14,8 +14,9 @@ snp_df <-
 # WGS cluster size frequencies
 print("Collecting wgs clusters")
 # Collecting wgs id's of new isolates, if they're already assigned
-con_wgsid <- dbConnect(RMySQL::MySQL(), group = "wgsid")
-wgsid.data <- dbReadTable(conn = con_wgsid, name = 'wgsid')
+# masked several parameters
+con_wgsid <- dbConnect("masked")
+wgsid.data <- dbReadTable(conn = con_wgsid, name = 'masked')
 dbDisconnect(con_wgsid)
 wgsid.freq <- unique(as.data.frame(wgsid.data[, c("wgsid", "Freq")]))
 range <- ceiling(max(wgsid.freq$Freq)/10)*10
@@ -37,8 +38,8 @@ freq2
 ###################################
 print("Collecting annot3 data")
 # Connect to annot3 database for Dutch isolate SNPs
-con_annot3 <- dbConnect(RMySQL::MySQL(), group = "annot3")
-annot.data <- dbReadTable(conn = con_annot3, name = 'annot3')
+con_annot3 <- dbConnect("masked")
+annot.data <- dbReadTable(conn = con_annot3, name = 'masked')
 dbDisconnect(con_annot3)
 # Limit scope to SNPs for now, no indels
 snp.data <- droplevels(subset(annot.data, VAR1 == "SNP"))
