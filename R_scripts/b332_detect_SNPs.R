@@ -1,5 +1,7 @@
+# proof of concept for a cluster
+
 # Set working directory
-installdir <- "/data/haddadt/NL_SNP"
+installdir <- "masked"
 setwd(dir=installdir)
 
 library("RMySQL") # myswl connection
@@ -11,8 +13,8 @@ library("dplyr") # set operations
 
 # Find small cluster to detect characteristic SNP
 # mysql: select * from wgsid where wgsid = "B332";
-con_wgsid <- dbConnect(RMySQL::MySQL(), group = "wgsid")
-wgsid.data <- dbReadTable(conn = con_wgsid, name = 'wgsid')
+con_wgsid <- dbConnect("masked")
+wgsid.data <- dbReadTable(conn = con_wgsid, name = 'masked')
 names(wgsid.data)
 dim(wgsid.data)
 # Close connection
@@ -30,8 +32,8 @@ b332_strains <- c(wgsid.data$strain)
 ###################################
 
 # Connect to annot3 database for Dutch isolate SNPs
-con_annot3 <- dbConnect(RMySQL::MySQL(), group = "annot3")
-annot.data <- dbReadTable(conn = con_annot3, name = 'annot3')
+con_annot3 <- dbConnect("masked")
+annot.data <- dbReadTable(conn = con_annot3, name = 'masked')
 names(annot.data)
 dim(annot.data)
 dbDisconnect(con_annot3)
@@ -80,10 +82,4 @@ b332_silent_snps <- droplevels(subset(b332_subset,
                                    (b332_subset$snp_type == "synonymous")))
 # display location + SNP freq
 table(b332_silent_snps$VAR5, b332_silent_snps$VAR6)
-
-
-# Here I show that B332 has 13 unique strains, but 17 strain+run combs total
-#strain_table <- table(c(b332_subset$strain)) # Strains in b332 cluster
-#b332_000001_strains <- subset(b332_subset, mut=="000001") # Strains with mut 000001, n=13
-#View(table(b332_000001_strains$strain)) # Table, shows 17 total, some strains >1
 
